@@ -1,95 +1,142 @@
 #include <stdio.h>
 
-// Desafio Super Trunfo - Países
-// Nivel Avancado - Super Poder e Comparacoes
+// ---------- ESTRUTURA ----------
+typedef struct {
+    char pais [50];
+    int populacao;
+    float area;
+    float pib;
+    int pontos;
+    float densidade;
+    } Carta;
 
-int main() {
-    // ===== Variaveis =====
-    char estado1, estado2;
-    char codigo1[4], codigo2[4];
-    char cidade1[50], cidade2[50];
+    // ---------- FUNÇÃO QUE RETORNA VALOR DO ATRIBUTO ----------
+float pegarValor(Carta c, int atributo) {
 
-    unsigned long int populacao1, populacao2;
-    int pontos1, pontos2;
+    switch(atributo) {
+        case 1: return c.populacao;
+        case 2: return c.area;
+        case 3: return c.pib;
+        case 4: return c.pontos;
+        case 5: return c.densidade;
+        default: return 0;
+    }
+}
 
-    float area1, area2;
-    float pib1, pib2;
+// ---------- NOME DO ATRIBUTO ----------
+char* nomeAtributo(int a) {
 
-    float densidade1, densidade2;
-    float pibPerCapita1, pibPerCapita2;
-    float superPoder1, superPoder2;
+    switch(a){
+        case 1: return "Populacao";
+        case 2: return "Area";
+        case 3: return "PIB";
+        case 4: return "Pontos Turisticos";
+        case 5: return "Densidade";
+        default: return "Desconhecido";
+    }
+}
 
-    // ===== Entrada de dados - Carta 1 =====
-    printf("=== Cadastro da Carta 1 ===\n");
 
-    printf("Estado (A a H): ");
-    scanf(" %c", &estado1);
+// ---------- MENU DINÂMICO ----------
+void mostrarMenu(int bloqueado){
 
-    printf("Codigo da Carta: ");
-    scanf("%s", codigo1);
+    printf("\nEscolha um atributo:\n");
 
-    printf("Nome da Cidade: ");
-    scanf(" %[^\n]", cidade1);
+    if(bloqueado != 1) printf("1 - Populacao\n");
+    if(bloqueado != 2) printf("2 - Area\n");
+    if(bloqueado != 3) printf("3 - PIB\n");
+    if(bloqueado != 4) printf("4 - Pontos Turisticos\n");
+    if(bloqueado != 5) printf("5 - Densidade\n");
+}
 
-    printf("Populacao: ");
-    scanf("%lu", &populacao1);
 
-    printf("Area (km²): ");
-    scanf("%f", &area1);
+// ---------- FUNÇÃO PRINCIPAL ----------
+int main(){
 
-    printf("PIB (em bilhoes): ");
-    scanf("%f", &pib1);
+    // Cartas fixas
+    Carta c1 = {"Brasil", 203000000, 8515767, 1868, 50};
+    Carta c2 = {"Canada", 38000000, 9984670, 2140, 40};
 
-    printf("Pontos Turisticos: ");
-    scanf("%d", &pontos1);
+    // cálculo densidade
+    c1.densidade = c1.populacao / c1.area;
+    c2.densidade = c2.populacao / c2.area;
 
-    // ===== Entrada de dados - Carta 2 =====
-    printf("\n=== Cadastro da Carta 2 ===\n");
+    int a1, a2;
 
-    printf("Estado (A a H): ");
-    scanf(" %c", &estado2);
+    // ---------- ESCOLHA ATRIBUTO 1 ----------
+    mostrarMenu(0);
+    printf("Primeiro atributo: ");
+    scanf("%d", &a1);
 
-    printf("Codigo da Carta: ");
-    scanf("%s", codigo2);
+    if(a1 < 1 || a1 > 5){
+        printf("Opcao invalida!\n");
+        return 0;
+    }
 
-    printf("Nome da Cidade: ");
-    scanf(" %[^\n]", cidade2);
+    // ---------- ESCOLHA ATRIBUTO 2 ----------
+    mostrarMenu(a1);
+    printf("Segundo atributo: ");
+    scanf("%d", &a2);
 
-    printf("Populacao: ");
-    scanf("%lu", &populacao2);
+    if(a2 < 1 || a2 > 5 || a2 == a1){
+        printf("Opcao invalida ou repetida!\n");
+        return 0;
+    }
 
-    printf("Area (km²): ");
-    scanf("%f", &area2);
+    // ---------- VALORES ----------
+    float v1a1 = pegarValor(c1,a1);
+    float v2a1 = pegarValor(c2,a1);
+    float v1a2 = pegarValor(c1,a2);
+    float v2a2 = pegarValor(c2,a2);
 
-    printf("PIB (em bilhoes): ");
-    scanf("%f", &pib2);
+    // ---------- RESULTADO INDIVIDUAL ----------
+    int p1 = 0, p2 = 0;
 
-    printf("Pontos Turisticos: ");
-    scanf("%d", &pontos2);
+    // regra especial densidade (5)
+    if(a1 == 5){
+        if(v1a1 < v2a1) p1++;
+        else if(v2a1 < v1a1) p2++;
+    } else {
+        if(v1a1 > v2a1) p1++;
+        else if(v2a1 > v1a1) p2++;
+    }
 
-    // ===== Calculos =====
-    densidade1 = (float)populacao1 / area1;
-    densidade2 = (float)populacao2 / area2;
+    if(a2 == 5){
+        if(v1a2 < v2a2) p1++;
+        else if(v2a2 < v1a2) p2++;
+    } else {
+        if(v1a2 > v2a2) p1++;
+        else if(v2a2 > v1a2) p2++;
+    }
 
-    pibPerCapita1 = pib1 / (float)populacao1;
-    pibPerCapita2 = pib2 / (float)populacao2;
+    // ---------- SOMA DOS ATRIBUTOS ----------
+    float soma1 = v1a1 + v1a2;
+    float soma2 = v2a1 + v2a2;
 
-    superPoder1 = (float)populacao1 + area1 + pib1 + pontos1 + pibPerCapita1 + (1.0f / densidade1);
-    superPoder2 = (float)populacao2 + area2 + pib2 + pontos2 + pibPerCapita2 + (1.0f / densidade2);
+    // ---------- RESULTADO FINAL (TERNÁRIO) ----------
+    char *vencedor =
+        (soma1 > soma2) ? c1.pais :
+        (soma2 > soma1) ? c2.pais :
+        "Empate";
 
-    // ===== Comparacoes =====
-    printf("\n=== Comparacao de Cartas ===\n");
+    // ---------- EXIBIÇÃO ----------
+    printf("\n======= RESULTADO =======\n");
 
-    printf("Populacao: Carta 1 venceu (%d)\n", populacao1 > populacao2);
-    printf("Area: Carta 1 venceu (%d)\n", area1 > area2);
-    printf("PIB: Carta 1 venceu (%d)\n", pib1 > pib2);
-    printf("Pontos Turisticos: Carta 1 venceu (%d)\n", pontos1 > pontos2);
+    printf("\nPais 1: %s", c1.pais);
+    printf("\nPais 2: %s\n", c2.pais);
 
-    // Densidade: menor vence
-    printf("Densidade Populacional: Carta 1 venceu (%d)\n", densidade1 < densidade2);
+    printf("\nAtributos escolhidos: %s e %s\n",
+           nomeAtributo(a1), nomeAtributo(a2));
 
-    printf("PIB per Capita: Carta 1 venceu (%d)\n", pibPerCapita1 > pibPerCapita2);
-    printf("Super Poder: Carta 1 venceu (%d)\n", superPoder1 > superPoder2);
+    printf("\n--- Valores ---\n");
+
+    printf("%s -> %.2f | %.2f\n", c1.pais, v1a1, v1a2);
+    printf("%s -> %.2f | %.2f\n", c2.pais, v2a1, v2a2);
+
+    printf("\nSoma %s: %.2f", c1.pais, soma1);
+    printf("\nSoma %s: %.2f\n", c2.pais, soma2);
+
+    printf("\nResultado Final: %s\n", vencedor);
 
     return 0;
 }
